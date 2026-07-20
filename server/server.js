@@ -20,6 +20,7 @@ app.use("/uploads", express.static("uploads"));
 
 // Routes
 app.use("/api/resume", require("./routes/resumeRoutes"));
+app.use("/api/ats", require("./routes/atsRoutes"));
 
 // Default Route
 app.get("/", (req, res) => {

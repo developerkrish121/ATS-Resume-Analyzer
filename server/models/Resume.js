@@ -6,14 +6,22 @@ const resumeSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
     originalName: {
       type: String,
       required: true,
     },
+
     extractedText: {
       type: String,
       required: true,
     },
+
+    atsScore: {
+      type: Number,
+      default: 0,
+    },
+
     uploadDate: {
       type: Date,
       default: Date.now,

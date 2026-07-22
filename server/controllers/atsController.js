@@ -1,40 +1,33 @@
-const Resume = require("../models/Resume");
-const calculateATSScore = require("../utils/atsScore");
+const calculateATS = require("../utils/atsScore");
 
-exports.analyzeResume = async (req, res) => {
+const analyzeResume = async (req, res) => {
   try {
-    const { resumeId, jobDescription } = req.body;
+    const { resumeText, jobDescription } = req.body;
 
-    if (!resumeId || !jobDescription) {
+    if (!resumeText || !jobDescription) {
       return res.status(400).json({
         success: false,
-        message: "Resume ID and Job Description are required",
+        message: "Resume text and Job Description are required.",
       });
     }
 
-    const resume = await Resume.findById(resumeId);
+    const result = calculateATS(resumeText, jobDescription);
 
-    if (!resume) {
-      return res.status(404).json({
-        success: false,
-        message: "Resume not found",
-      });
-    }
-
-    const result = calculateATSScore(
-      resume.extractedText,
-      jobDescription
-    );
-
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      resumeId,
-      ...result,
+      message: "ATS analysis completed successfully.",
+      data: result,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("ATS Error:", error);
+
+    return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Internal Server Error",
     });
   }
+};
+
+module.exports = {
+  analyzeResume,
 };

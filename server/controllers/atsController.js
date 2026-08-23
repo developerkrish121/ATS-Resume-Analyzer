@@ -4,14 +4,28 @@ const analyzeResume = async (req, res) => {
   try {
     const { resumeText, jobDescription } = req.body;
 
-    if (!resumeText || !jobDescription) {
+    if (
+      typeof resumeText !== "string" ||
+      !resumeText.trim() ||
+      typeof jobDescription !== "string" ||
+      !jobDescription.trim()
+    ) {
       return res.status(400).json({
         success: false,
         message: "Resume text and Job Description are required.",
+        data: null,
       });
     }
 
-    const result = calculateATS(resumeText, jobDescription);
+    if (resumeText.length > 200000 || jobDescription.length > 50000) {
+      return res.status(400).json({
+        success: false,
+        message: "Resume text or Job Description is too long.",
+        data: null,
+      });
+    }
+
+    const result = calculateATS(resumeText.trim(), jobDescription.trim());
 
     return res.status(200).json({
       success: true,
@@ -19,11 +33,12 @@ const analyzeResume = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    console.error("ATS Error:", error);
+    console.error("ATS analysis error.");
 
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
+      data: null,
     });
   }
 };
